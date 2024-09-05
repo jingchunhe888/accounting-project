@@ -1,5 +1,3 @@
-#ocr for chase bank statements
-
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext
 import pandas as pd
@@ -311,9 +309,7 @@ def save_dataframe_to_excel(df, file_path):
         df.to_excel(writer, sheet_name=filename, index=False)
     print(f"DataFrame has been written to the '{filename}' sheet in '{file_path}'.")
 
-end_date = datetime.datetime(2024, 10, 20)  # Example: 5th August 2024
 
-# Get the current date
-current_date = datetime.datetime.now()
+chase(file_path_history_config)
 
 # main_get_df(file_path_config)
