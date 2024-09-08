@@ -56,8 +56,8 @@ def process_data(text, year, count):
 
         if match_price:
             price = match_price.group()
-            print('matched price')
-            print(price)
+            # print('matched price')
+            # print(price)
             price = price.replace('$', "")
             price = price.replace(',', '')
             # price_float = float(price)
@@ -173,45 +173,6 @@ def process_data(text, year, count):
 
     # return df
 
-    # description = re.sub(r'\S*\d\S*', '', description)  # Remove digits
-    # description = re.sub(r'\b(?:CCD|ID|Bkcd|Stlmt|PPD)\b', '', description, flags=re.IGNORECASE)
-    # description = re.sub(r'https', '', description, flags=re.IGNORECASE).strip()
-    # description = re.sub(r'http', '', description, flags=re.IGNORECASE).strip()
-    # description = re.sub(r'www', '', description, flags=re.IGNORECASE).strip()
-    # description = re.sub(r'\bRecurring Card Purchase\b', '', description, flags=re.IGNORECASE).strip()
-    # description = re.sub(r'\bCard Purchase\b', '', description, flags=re.IGNORECASE).strip()
-    # description = re.sub(r'With Pin', '', description, flags=re.IGNORECASE).strip()
-    # description = re.sub(r'\b(?:Card)\b', '', description, flags=re.IGNORECASE)
-    # description = re.sub(r'\bTsysTransfirst\s+', '', description).strip()
-    # description = re.sub(r'\b[A-Z]{2}\b', '', description)
-    # description = re.sub(r'New York', '', description)
-    # description = re.sub(r'[\/\\,-]', '', description)
-    # description = re.sub(r'(\.com)(?=.*\.com)', '', description, flags=re.IGNORECASE)
-    # description = re.sub(r'\.(?!com)', '', description, flags=re.IGNORECASE)
-    # word_counts = len(description.split())
-    # if word_counts < 2:
-    #     description = re.sub(r'.com', '', description, flags=re.IGNORECASE)
-    #     print(word_counts)
-    # else:
-    #     description = re.sub(r'\S*\.com\S*', '', description, flags=re.IGNORECASE)  # Remove .com and following word
-    #     description = re.sub(r'\S*\.com\S*', '', description, flags=re.IGNORECASE).strip()
-    #
-    # description = re.sub(r'[.-:\*]', ' ', description)
-    #
-    #
-    # # Remove everything after a digit without a preceding space
-    # description = re.sub(r'(\S*\d\S*).*', '', description)
-    # description = ' '.join(description.split())
-
-    # description = re.sub(r'\d', '', description)
-    # description = re.sub(r'\b(?:Card|Purchase|CCD|ID|Bkcd|Stlmt)\b', '', description, flags=re.IGNORECASE)
-    # description = re.sub(r'\bTsysTransfirst\s+', '', description).strip()
-    # description = re.sub(r'[\/\\,]', '', description)
-    # description = re.sub(r'\.com\b', '', description, flags=re.IGNORECASE)
-    # description = re.sub(r'[.-:]', '', description)>
-
-    # Create DataFrame from dates and prices
-
 def crop_page(file_path):
     pdf = pdfplumber.open(file_path)
     lines = ''
@@ -235,7 +196,7 @@ def crop_page(file_path):
         #change from page1 to page
         text = page.extract_text(x_tolerance=2, y_tolerance=0.3)
         lines = lines + '\n' + text
-    # print(lines)
+    print(lines)
     year, lines, count = filter_lines(lines)
     return year, lines, count
     # return lines.strip()
