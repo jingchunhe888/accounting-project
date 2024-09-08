@@ -1,0 +1,62 @@
+import openai
+from openai import OpenAI
+import os
+
+API_KEY = os.getenv("OPENAI_API_KEY")
+
+client = OpenAI()
+
+def edit(description):
+    try: 
+        prompt = f'''
+        You are an accountant inputting and classifying bank transactions. Extract and simplify the vendor/payee name from the following bank transaction description. 
+        Ensure that the vendor/payee name is clear, without any acronyms or unnecessary characters, 
+        and suitable for accounting software like QuickBooks or Xero. 
+
+        Your output should be only the simplified vendor/payee name, with no additional text.
+
+        You are able to distinguish different types of input: 
+        1. Transactions between bank, credit card accounts, or withdrawals. If the inputs are transactions between bank or credit card accounts, make sure to keep the account or cc number.
+        2. Companies / Entities. Remove business structures such as 'INC', 'LLC', 'LIMITED', or abbreviations from company names. Keep only the core name without any suffixes indicating the business type or legal structure. For example, if the name is 'Qbs Software Limited', return only 'Qbs Software. 
+        3. People
+        4. Withdrawals
+        5. All inputs were preprocessed by removing and replacing special characters by spaces. Therefore, some text such as "www" and "com" from an URL may show up. Remove any part from the text. 
+        
+        Examples:
+
+        Input:
+        American Express ACH Pmt W0690 CCD ID: 2005032111
+        Output:
+        American Express
+
+        Input:
+        Card Purchase 01/04 Amzn Mktp US*9N7426K Amzn.Com/Bill WA Card 9720
+        Output:
+        Amazon Marketplace US
+
+        Input:
+        {description}
+        '''
+        response = client.chat.completions.create(
+            model="gpt-4o",  # or "gpt-3.5-turbo" if you don't have access to GPT-4
+            messages=[
+                    {"role": "user", "content": prompt}
+                ], 
+
+            temperature = 0.01,
+            max_tokens = 70,
+            top_p=1
+            )
+        print("Total tokens used:", response.usage.total_tokens)
+        print("Prompt tokens:", response.usage.prompt_tokens)
+        print("Completion tokens:", response.usage.completion_tokens)
+        return response.choices[0].message.content.strip()
+    
+    except Exception as e: 
+        return f'error occured {e}'
+
+#block below to test code    
+# description = "Bfs Rcvbls I ACH Items"
+# simplified_vendor = edit(description)
+# print('simplified vendor')
+# print(simplified_vendor)
