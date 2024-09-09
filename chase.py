@@ -1,6 +1,9 @@
+# import tkinter as tk
+# from tkinter import filedialog, messagebox, scrolledtext
 import pandas as pd
 import re
-from pdf import *
+import pdfplumber
+# from pdf import *
 import os
 import time
 import datetime
@@ -212,6 +215,7 @@ def filter_lines(text):
     pattern_ending_balance = re.compile(r'.*start.*ending.*balance.*', flags=re.IGNORECASE)
     lines = text.split('\n')
     pattern_year = re.compile(r'.*,.*through.*, (.*)')
+    pattern_year_cc = re.compile(r'Opening\/Closing Date \d{2}\/\d{2}\/\d{2} - \d{2}\/\d{2}\/(\d{2})')
     num_deposits = re.compile(r'Total Deposits and Additions (\$)?(.*)', flags=re.IGNORECASE)
     balance = re.compile(r'DATE DESCRIPTION AMOUNT BALANCE', flags=re.IGNORECASE)
     table_headers = re.compile(r'DATE DESCRIPTION AMOUNT', flags=re.IGNORECASE)
@@ -226,6 +230,12 @@ def filter_lines(text):
         if year == None: 
             if pattern_year.search(line): 
                 year = pattern_year.search(line).group(1)
+            if pattern_year_cc.search(line):
+                # year = '20'
+                year = pattern_year_cc.search(line).group(1)
+                if len(year)!=4:
+                    # print('hi')
+                    year = str(base_year_config)+year
         if num_deposits.search(line):
             print('num deposits')
             deposits = num_deposits.search(line).group(2)
@@ -270,3 +280,35 @@ def save_dataframe_to_excel(df, file_path):
                         mode='a') as writer:
         df.to_excel(writer, sheet_name=filename, index=False)
     print(f"DataFrame has been written to the '{filename}' sheet in '{file_path}'.")
+
+
+#to delete afterwards
+
+# chase('/Users/jinhe/Documents/M&T Bank/Other Files/Chase Platinum Select Checking.pdf')
+
+# file_path = file_path_config
+# if os.path.isdir(file_path):
+#     all_df = []  # Flat list to store all DataFrames from all files
+#     for filename in os.listdir(file_path):
+#         # print('inside driver loop')
+#         full_path = os.path.join(file_path, filename)
+#         if full_path.startswith('.') or not full_path.lower().endswith('.pdf'):
+#             continue
+#         if os.path.isfile(full_path):  # Check if it's a file')
+#             try: 
+#                 combined_df = chase(full_path)
+#                 print('combined!')
+#                 all_df.append(combined_df)
+#                 final_combined_df = pd.concat(all_df, ignore_index=True)
+#                 print(final_combined_df.to_string())
+#             except Exception as e: 
+#                 print(f'ID 2 Problem with {full_path}: {e}')
+    # Concatenate all DataFrames from all files
+
+    # print('second option combine')
+    # final_combined_df = pd.concat(all_df, ignore_index=True)
+    # print(final_combined_df.to_string())
+    # keyboard = final_combined_df['Memo'].dropna()
+    # keyboard.to_clipboard(index=True)
+
+# main_get_df(file_path_config)
