@@ -280,21 +280,30 @@ def check_bank(file_full_path, file_path):
     # except Exception as e: 
     #     print(f'1 Problem with {file_full_path}: {e}')
 
+#1st block
 # update uncomment   
-df = main(file_path_config)
+df_complete = main(file_path_config)
+# df_complete.to_clipboard()
+# print(df_complete.to_string())
+
 # print(df.to_string())
 # print(df[memo_config].to_string())
-df[description_config] = df.apply(
+df_complete[description_config] = df_complete.apply(
     lambda row: process_description(row[memo_config]) if pd.isna(row[description_config]) else row[description_config],
     axis=1
 ) 
 
+# print(df_complete.to_string())
 
 # print(df.to_string())
-df = df.drop_duplicates(subset=description_config,keep='first',ignore_index=True)
-dfcopy = df[[description_config,memo_config,deposit_config,withdrawal_config]]
-dfcopy.to_clipboard()
-print(dfcopy.to_string())
+df_summary = df_complete.drop_duplicates(subset=description_config,keep='first',ignore_index=True)
+# print('df summar')
+# print(df_summary.to_string())
+# df_summary.to_clipboard()
+
+dfcopy = df_summary[[description_config,memo_config,deposit_config,withdrawal_config]]
+# dfcopy.to_clipboard()
+# print(dfcopy.to_string())
 
 # df_description = pd.Series(df[description_config].unique())
 # df_description.to_clipboard()
@@ -308,38 +317,33 @@ print(dfcopy.to_string())
 #     text=count
 #     return text
 
-df_ai = dfcopy.head(5).copy()
+# df_ai = dfcopy.copy()
+df_ai = dfcopy.head(10).copy()
+# print(df_ai.to_string()
 df_ai['AI Suggested'] = None
 # print(df_ai.to_string())
 df_ai['AI Suggested'] = df_ai[description_config].apply(edit)
+
+df_ai_copy = df_ai.copy()
+df_ai_copy[account_config]='Sales'
+
 df_ai = df_ai.drop_duplicates(subset='AI Suggested',keep='first',ignore_index=True)
 df_ai = df_ai[['AI Suggested',description_config,memo_config,deposit_config,withdrawal_config]]
 print(df_ai.to_string())
+df_ai.to_clipboard()
 
 
-df_ai[account_config] = 'Sales'
+def fill(df_ai,df_complete):
+    dict_fill_acct = df_ai.set_index('AI Suggested')[account_config].to_dict()
+    dict_fill_des = df_ai.set_index(description_config)['AI Suggested'].to_dict()
+    df_complete[description_config]=df_complete[description_config].replace(dict_fill_des)
+    df_complete[account_config] = df_complete[description_config].map(dict_fill_acct)
+    df_complete = df_complete[[description_config,account_config,checks_config,memo_config,deposit_config,withdrawal_config]]
+    return df_complete
 
-dict_fill_acct = df_ai.set_index('AI Suggested')[account_config].to_dict()
-dict_fill_des = df_ai.set_index(description_config)['AI Suggested'].to_dict()
-
-print(dict_fill_acct)
-
-
-df_ai[description_config]=df_ai[description_config].replace(dict_fill_des)
-df_ai[account_config] = df_ai[description_config].map(dict_fill_acct)
-df_ai = df_ai[[description_config,account_config,memo_config,deposit_config,withdrawal_config]]
-print(df_ai.to_string())
+# print(dict_fill_acct)
 
 
-
-# df_ai_vendor = df_description.apply(edit)
-# df_ai_vendor = pd.DataFrame(df_ai_vendor, columns=['AI Suggested'])
-# print(df_ai_vendor.to_string())
-
-
-# df = df[[description_config,memo_config]]
-# print(df.to_string())
-# update delete afterwards 
-# bank = 'MANUFACTURERS AND TRADERS TRUST COMPANY'
-# driver(file_path_config, bank)
-
+df_fill = fill(df_ai_copy,df_complete)
+# df_fill.to_clipboard()
+# print(df_fill.to_string())
