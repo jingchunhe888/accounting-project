@@ -157,9 +157,6 @@ def filter_lines(entire_text,year):
                                     description += ' ' + next_line
                                 else: 
                                     break
-                        amount = amount.replace('$','')
-                        amount = amount.replace(',','')
-                        date = format_date(date,year)
 
                     if heading_pattern == pa_config:
                         date, description, amount = [x.strip() for x in match.groups()]
@@ -183,14 +180,6 @@ def filter_lines(entire_text,year):
                                 description += ' ' + next_line
                             else:
                                 pass 
-                        amount = amount.replace('$','')
-                        amount = amount.replace(',','')
-                        date = format_date(date,year)
-                        check_in_d = check_pattern_in_d.match(description).group(1)
-                        if check_in_d:
-                            check_no = check_in_d
-                        else:
-                            check_no = None
 
                     elif current_pattern == dda_pattern_config:  # Check for second pattern
                         date, description, amount = [x.strip() for x in match.groups()]
@@ -204,13 +193,19 @@ def filter_lines(entire_text,year):
                                     description += ' ' + next_line
                                 else: 
                                     break
-                        amount = amount.replace('$','')
-                        amount = amount.replace(',','')
-                        date = format_date(date,year)
-                        if check_pattern_in_d.match(description):
-                            check_no = check_pattern_in_d.match(description).group(1)
-                        else:
-                            check_no = None
+                    
+                    elif current_pattern == ddab_pattern_config:
+                        date, description, amount = [x.strip() for x in match.groups()]
+                        for j in range(1,3):
+                            if i+j < len(lines):
+                                next_line = lines[i+j].strip()
+                                next_match = current_pattern.match(next_line)
+                                end_match = any(pattern.match(next_line) for pattern in end_of_section_pattern)                                
+                                
+                                if not next_match and next_line !="" and not end_match:
+                                    description += ' ' + next_line
+                                else: 
+                                    break
                     
                     elif current_pattern == ddab_pattern_config:
                         date, description, amount = [x.strip() for x in match.groups()]
@@ -225,34 +220,15 @@ def filter_lines(entire_text,year):
                                 else: 
                                     break
 
-                        date = format_date(date,year)
-                        amount = amount.replace('$','')
-                        amount = amount.replace(',','')
-                        if check_pattern_in_d.match(description):
-                            check_no = check_pattern_in_d.match(description).group(1)
-                        else:
-                            check_no = None
+                    date = format_date(date,year)
+                    amount = amount.replace('$','')
+                    amount = amount.replace(',','')
+                    check_in_d = check_pattern_in_d.match(description)
                     
-                    elif current_pattern == ddab_pattern_config:
-                        date, description, amount = [x.strip() for x in match.groups()]
-                        for j in range(1,3):
-                            if i+j < len(lines):
-                                next_line = lines[i+j].strip()
-                                next_match = current_pattern.match(next_line)
-                                end_match = any(pattern.match(next_line) for pattern in end_of_section_pattern)                                
-                                
-                                if not next_match and next_line !="" and not end_match:
-                                    description += ' ' + next_line
-                                else: 
-                                    break
-
-                        date = format_date(date,year)
-                        amount = amount.replace('$','')
-                        amount = amount.replace(',','')
-                        if check_pattern_in_d.match(description):
-                            check_no = check_pattern_in_d.match(description).group(1)
-                        else:
-                            check_no = None
+                    if check_in_d:
+                        check_no = check_in_d.group(1)
+                    else:
+                        check_no = None
 
                     memo_list.append(description)
                     dates_list.append(date)
@@ -260,11 +236,12 @@ def filter_lines(entire_text,year):
                     checks_list.append(check_no) 
 
                 else:
+                    pass
                     # Line doesn't match the current pattern
-                    if len(line.strip())<1:
-                        pass
-                    else:
-                        pass
+                    # if len(line.strip())<1:
+                    #     pass
+                    # else:
+                    #     pass
                         # print("Skipped line:", line.strip())
             else:
                 pass
